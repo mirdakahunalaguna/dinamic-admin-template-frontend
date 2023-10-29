@@ -17,9 +17,10 @@ defineProps({
   <div class="relative text-gray-500  focus-within:text-gray-900 dark:focus-within:text-gray-400">
     <div 
     aria-hidden="true" 
-    class="absolute inset-y-0 flex items-center px-4  pointer-events-none ">
+    class="absolute inset-y-0 flex items-center px-4  pointer-events-none text-black">
      <span :label="label" :class="labelClasses">
       {{ label }}
+     <span>:</span>
      </span>
     </div>
 
