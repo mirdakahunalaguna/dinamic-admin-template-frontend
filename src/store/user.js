@@ -5,17 +5,70 @@ export default {
     state: {
         users: [], //MENAMPUNG LIST USER
         roles: [], //MENAMPUNG LIST ROLES
+        userRoles: [], //MENAMPUNG LIST ROLES
         permissions: [], //MENAMPUNG LIST PERMISSION
         role_permission: [], //MENAMPUNG PERMISSION YANG DIMILIKI OLEH ROLE
         authenticated: [], //MENAMPUNG USER YANG SEDANG LOGIN
         searchKeyword: '', // Kata kunci pencarian
+        tableHeader: {
+            draw: 0,
+            search: '',
+            length: 5,
+        },
+        paginationData: {
+            lastPage: '',
+            currentPage: '',
+            total: '',
+            lastPageUrl: '',
+            nextPageUrl: '',
+            prevPageUrl: '',
+            from: '',
+            to: '',
+        },
     },
+    getters: {
+        users(state) {
+            return state.users
+        },
+        roles(state) {
+            return state.roles
+        },
+        userRoles(state) {
+            return state.userRoles
+        },
+        permissions(state) {
+            return state.permissions
+        },
+        rolePermissions(state) {
+            return state.role_permission
+        },
+        authenticatedUser(state) {
+            return state.authenticated
+        },
+        searchKeyword(state) {
+            return state.searchKeyword
+        },
+        tableHeader(state) {
+            return state.tableHeader
+        },
+        // Getter untuk mengakses data paginationData
+        paginationData(state) {
+            return state.paginationData
+        },
+    },
+
     mutations: {
         SET_USERS(state, users) {
             state.users = users
         },
+        SET_TABLE_HEADER_VALUE(state, tableHeader) {
+            state.tableHeader = tableHeader
+        },
         SET_ROLES(state, roles) {
             state.roles = roles
+        },
+        SET_USER_ROLES(state, userRoles) {
+            state.userRoles = userRoles
         },
         SET_PERMISSIONS(state, permissions) {
             state.permissions = permissions
@@ -29,8 +82,36 @@ export default {
         SET_USER_AUTH(state, authenticated) {
             state.authenticated = authenticated
         },
+        SET_PAGINATION_DATA(state, paginationData) {
+            state.paginationData = paginationData
+        },
     },
     actions: {
+        //FUNGSI UNTUK MENAMPILKAN DATA PAGING USER ROLE
+        async loadUserRoles({ commit }, { url, tableHeader }) {
+            try {
+                const response = await axios.get(url, { params: tableHeader })
+                const data = response.data.data
+
+                // Memanggil mutation untuk mengatur data menu
+                commit('SET_USER_ROLES', data.data)
+
+                // Memanggil mutation untuk mengatur data paginasi
+                commit('SET_PAGINATION_DATA', {
+                    lastPage: data.last_page,
+                    currentPage: data.current_page,
+                    total: data.total,
+                    lastPageUrl: data.last_page_url,
+                    nextPageUrl: data.next_page_url,
+                    prevPageUrl: data.prev_page_url,
+                    from: data.from,
+                    to: data.to,
+                })
+                // console.log('Data yang diterima dari API:', data)
+            } catch (error) {
+                console.error(error)
+            }
+        },
         //FUNGSI INI UNTUK MENGAMBIL DATA USER
         async getUserLists({ commit }) {
             try {

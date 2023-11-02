@@ -6,7 +6,8 @@ import { reactive, computed, ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
 // Store Vuex
-const store = useStore(); const menu = computed(() => store.getters['sidebarMenu/menu']);
+const store = useStore(); 
+const menu = computed(() => store.getters['sidebarMenu/menu']);
 const tableHeader = computed(() => store.getters['sidebarMenu/tableHeader']);
 const paginationData = computed(() => store.getters['sidebarMenu/paginationData']);
 const isLoading = ref(false);
@@ -237,6 +238,7 @@ const sortOrders = ref({});
 const selectedKey = ref([]); 
 // Fungsi untuk mengganti urutan pengurutan
 const toggleSortOrder = (columnName) => {
+  console.log(columnName)
   if (selectedKey.includes(columnName)) {
     const index = selectedKey.indexOf(columnName);
     selectedKey.splice(index, 1);
@@ -247,7 +249,7 @@ const toggleSortOrder = (columnName) => {
   sortOrders[columnName] = sortOrders[columnName] === 'asc' ? 'desc' : 'asc';
 }; 
 const sortedMenus = computed(() => {
-  const sortedMenus = [...menu.value];
+  const sortedMenus = [...menu.value]; 
   sortedMenus.sort((a, b) => {
     for (const columnName of selectedKey.value) {
       const keyA = a[columnName] ? a[columnName].toLowerCase() : '';
@@ -313,7 +315,7 @@ onMounted(() => {
       @update-menu="updateMenu" 
       @close="isEditModalOpen = false" />
 
-  <div class="-mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+  <div class="-mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
     <div class="grid grid-cols-1 gap-4 ">
       <BaseCard  title="input menu" >
         <div  class="w-full h-10 flex items-center justify-start ">
@@ -436,10 +438,10 @@ onMounted(() => {
           :show-icons="true"
           :selected-key="selectedKey"
           @sort="toggleSortOrder"
-          class="mt-6 max-h-screen"
+          class="mt-4"
         >
           <tbody >
-           <tr v-for="menu in sortedMenus"  
+            <tr v-for="menu in sortedMenus"  
             @click="toggleSortOrder(column.name)" 
             :key="menu.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
             <td class="px-6 py-3"><Icon class="w-6 h-6" :icon="menu.icon" /> </td>
@@ -478,8 +480,7 @@ onMounted(() => {
                 </template>
               </Dropdown>
             </td>
-          </tr>
-
+            </tr>
           </tbody> 
         </TableHeaders>
       </base-card>
