@@ -81,19 +81,30 @@ export default [
                 component: () => import('@/views/PageSubmenuNotFound.vue'),
             },
             {
+                path: '/detail-role',
+                name: 'DetailRole',
+                component: () => import('@/views/pengaturan/DetailRole.vue'),
+            },
+            {
+                path: '/detail-permission',
+                name: 'DetailPermission',
+                component: () =>
+                    import('@/views/pengaturan/DetailPermission.vue'),
+            },
+            {
                 path: '/setting-menu-sidebar',
                 name: 'SettingMenu',
                 component: () =>
                     import('@/views/pengaturan/SettingMenuSidebar.vue'),
             },
             {
-                path: '/pages/setting-submenu-sidebar',
+                path: '/setting-submenu-sidebar',
                 name: 'SettingSubmenu',
                 component: () =>
                     import('@/views/pengaturan/SettingSubmenuSidebar.vue'),
             },
             {
-                path: '/pages/setting-role',
+                path: '/setting-role',
                 name: 'SettingRole',
                 component: () => import('@/views/pengaturan/SettingRole.vue'),
             },

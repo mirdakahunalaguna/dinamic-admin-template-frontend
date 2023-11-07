@@ -20,9 +20,9 @@ defineProps({
     >
         <div
             aria-hidden="true"
-            class="absolute inset-y-0 flex items-center px-4 pointer-events-none "
+            class="absolute inset-y-0 flex items-center px-4 "
         >
-            <Icon :icon="icon" :class="iconClasses" />
+            <Icon :icon="icon" :class="iconClasses" class="hover:text-emerald-700 font-semibold "/>
         </div>
 
         <slot />

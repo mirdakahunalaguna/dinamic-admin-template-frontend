@@ -9,7 +9,7 @@
           <Label 
             for="name" 
             value="Name" 
-            class="text-left" />
+            class="text-left"/>
           <input-select
             :options="selectOptions"
             v-model="editedSubmenu.menu_id"
@@ -18,7 +18,7 @@
           <Label 
             for="name" 
             value="icon name" 
-            class="text-left" />
+            class="text-left"/>
 
           <div class="flex gap-4 justify-between">
             <div>

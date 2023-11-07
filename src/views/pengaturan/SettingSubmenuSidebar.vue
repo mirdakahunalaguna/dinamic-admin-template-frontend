@@ -1,3 +1,130 @@
+<template>
+  <PageWrapper title="Create Submenu Sidebar">
+     <!--  --> 
+    <template v-if="isLoading"> 
+      <loading-screen/> 
+    </template>  
+  <!-- komponen modal delete -->
+    <modal-delete
+        :is-open="isDeleteModalOpen"
+        :deleteId="deleteId"
+        :itemName="itemName"
+        @close="isDeleteModalOpen = false"
+        @confirm-delete="deleteSubmenu" 
+        v-if="isDeleteModalOpen"/>
+    <!-- Gunakan komponen ModalEditSubmenu -->
+      <modal-edit-submenu
+        :is-open="isEditModalOpen" 
+        :editedSubmenu="editedSubmenu" 
+        :selectOptions="selectOptions"
+        @update-submenu="updateSubmenu" 
+        @close="isEditModalOpen = false" />
+      
+    <div class="-mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
+      <div>
+        <BaseCard 
+        title="input sub-menu" 
+        :actions="[{ title: 'View', to: '#' }]">
+          <div  class="w-full -mt-2 h-8 flex items-center justify-start">
+            <InputError v-if="isError" :message="errorMessage" />
+          </div> 
+          <form @submit.prevent="handleSubmit" class="grid grid-cols-1 gap-6 md:w-3/4">
+            <input-select
+                  id="menu-name"
+                  :options="selectOptions" 
+                  v-model="selectedMenuId"
+                />
+                <!-- <p>Anda telah memilih menu dengan ID: {{ selectedMenuId }}</p> -->
+            <InputLabelWrapper label="title" >
+            <Input
+              withLabel
+              type="text"
+              class="block w-full  pl-24"
+              v-model="form.title" 
+            />
+            </InputLabelWrapper>
+            <InputLabelWrapper label="route to " >
+            <Input
+              withLabel
+              type="text"
+              class="block w-full  pl-24"
+              v-model="form.to"
+            />
+            </InputLabelWrapper> 
+            <Button  
+                icon-only
+                type="submit"
+                class="w-10"
+                variant="secondary"
+                srText="Toggle dark mode"
+                left-icon="icon-park-solid:add"
+            >
+            </Button>
+          </form>  
+        </BaseCard>
+      </div>
+      <base-card title="tabel sub-menu">
+        <TableSetting
+          :element="showElement"
+          v-model:search="tableHeader.search"
+          v-model:length="tableHeader.length"
+          @searchValueEnter="loadSubmenus()"
+          @searchValueButtonClick="loadSubmenus()"
+          @showTotalDisplayChanged="loadSubmenus()"
+          />
+        <TableHeaders
+          :columns="tableColumns"
+          :sort-key="sortKey"
+          :sort-orders="sortOrders"
+          :show-icons="true"
+          :selected-key="selectedKey"
+          @sort="toggleSortOrder"
+          class="mt-6 max-h-screen"
+        >
+          <tbody >
+            <tr v-for="submenu in sortedSubmenus"  
+              @click="toggleSortOrder(column.name)" 
+              :key="submenu.id" 
+              class=" bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+              <td class="px-6 py-3">{{ submenu.menu.title  }}</td>
+              <td class="px-6 py-3">{{ submenu.title }} </td>
+              <td class="px-6 py-3">{{ submenu.to }}</td>
+              <td class="px-6 py-3">
+                <Dropdown align="right" class="">
+                  <template #trigger>
+                    <Button
+                      iconOnly
+                      variant="secondary"
+                      icon="mdi:dots-horizontal"
+                    ></Button>
+                  </template>
+                  <template #content>
+                    <div class="flex flex-col">
+                      <button @click.prevent="openModalEditSubmenu(submenu)">
+                        <DropdownLink to="#">edit</DropdownLink>
+                      </button>
+                      <button
+                        @click.prevent="prepareDelete(submenu.id,submenu.title)"
+                        :disabled="!submenu.id"
+                      >
+                        <DropdownLink to="#">delete</DropdownLink>
+                      </button>
+                    </div>
+                  </template>
+                </Dropdown>
+              </td>
+            </tr>
+          </tbody> 
+        </TableHeaders>
+        <TablePagination
+          :pagination="paginationData"
+          @prevPage="loadSubmenus(paginationData.prevPageUrl)"
+          @nextPage="loadSubmenus(paginationData.nextPageUrl)"
+        />
+      </base-card>
+    </div>
+  </PageWrapper>
+</template>
 <script setup>
 import ModalEditSubmenu from '@/views/modal/ModalEditSubmenu.vue'
 import { ref, onMounted, computed, reactive } from 'vue';
@@ -169,10 +296,10 @@ const itemName = ref(null); // Default value is null
 const isDeleteModalOpen = ref(false);
 
 // Persiapan sebelum menghapus menu
-const prepareDelete = (id,title) => {
+const prepareDelete = (id, title) => {
   // Set ID menu yang akan dihapus
   deleteId.value = id;// Tambahkan console.log di sini\
-  itemName.value    = title; 
+  itemName.value = title;
   // Buka modal
   isDeleteModalOpen.value = true;
 };
@@ -194,17 +321,17 @@ const deleteSubmenu = async () => {
 
 // PROSES UPDATE SUBMENU
 const isEditModalOpen = ref(false);
-const editedSubmenu = ref({ 
-  menu_id: '', 
-  title: '', 
-  to: '' 
+const editedSubmenu = ref({
+  menu_id: '',
+  title: '',
+  to: ''
 });
 
 
 // Fungsi untuk membuka modal edit menu
 const openModalEditSubmenu = (submenu) => {
   // Buka modal edit dan isi data submenu yang akan diubah
-  editedSubmenu.value = { ...submenu}; // Perhatikan perubahan di sini
+  editedSubmenu.value = { ...submenu }; // Perhatikan perubahan di sini
   console.log(editedSubmenu.value)
   isEditModalOpen.value = true;
 };
@@ -231,130 +358,3 @@ onMounted(async () => {
   loadSubmenus();
 });
 </script>
-<template>
-  <PageWrapper title="Create Submenu Sidebar">
-     <!--  --> 
-    <template v-if="isLoading"> 
-      <loading-screen/> 
-    </template>  
-  <!-- komponen modal delete -->
-    <modal-delete
-        :is-open="isDeleteModalOpen"
-        :deleteId="deleteId"
-        :itemName="itemName"
-        @close="isDeleteModalOpen = false"
-        @confirm-delete="deleteSubmenu" 
-        v-if="isDeleteModalOpen"/>
-    <!-- Gunakan komponen ModalEditSubmenu -->
-      <modal-edit-submenu
-        :is-open="isEditModalOpen" 
-        :editedSubmenu="editedSubmenu" 
-        :selectOptions="selectOptions"
-        @update-submenu="updateSubmenu" 
-        @close="isEditModalOpen = false" />
-      
-    <div class="-mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-      <div>
-        <BaseCard 
-        title="input sub-menu" 
-        :actions="[{ title: 'View', to: '#' }]">
-          <div  class="w-full -mt-2 h-8 flex items-center justify-start">
-            <InputError v-if="isError" :message="errorMessage" />
-          </div> 
-          <form @submit.prevent="handleSubmit" class="grid grid-cols-1 gap-6 md:w-3/4">
-            <input-select
-                  id="menu-name"
-                  :options="selectOptions" 
-                  v-model="selectedMenuId"
-                />
-                <!-- <p>Anda telah memilih menu dengan ID: {{ selectedMenuId }}</p> -->
-            <InputLabelWrapper label="title" >
-            <Input
-              withLabel
-              type="text"
-              class="block w-full  pl-24"
-              v-model="form.title" 
-            />
-            </InputLabelWrapper>
-            <InputLabelWrapper label="route to " >
-            <Input
-              withLabel
-              type="text"
-              class="block w-full  pl-24"
-              v-model="form.to"
-            />
-            </InputLabelWrapper> 
-            <Button  
-                icon-only
-                type="submit"
-                class="w-10"
-                variant="secondary"
-                srText="Toggle dark mode"
-                left-icon="icon-park-solid:add"
-            >
-            </Button>
-          </form>  
-        </BaseCard>
-      </div>
-      <base-card title="tabel sub-menu">
-        <TableSetting
-          :element="showElement"
-          v-model:search="tableHeader.search"
-          v-model:length="tableHeader.length"
-          @searchValueEnter="loadSubmenus()"
-          @searchValueButtonClick="loadSubmenus()"
-          @showTotalDisplayChanged="loadSubmenus()"
-          />
-        <TableHeaders
-          :columns="tableColumns"
-          :sort-key="sortKey"
-          :sort-orders="sortOrders"
-          :show-icons="true"
-          :selected-key="selectedKey"
-          @sort="toggleSortOrder"
-          class="mt-6 max-h-screen"
-        >
-          <tbody >
-            <tr v-for="submenu in sortedSubmenus"  
-              @click="toggleSortOrder(column.name)" 
-              :key="submenu.id" 
-              class=" bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-              <td class="px-6 py-3">{{ submenu.menu.title  }}</td>
-              <td class="px-6 py-3">{{ submenu.title }} </td>
-              <td class="px-6 py-3">{{ submenu.to }}</td>
-              <td class="px-6 py-3">
-                <Dropdown align="right" class="">
-                  <template #trigger>
-                    <Button
-                      iconOnly
-                      variant="secondary"
-                      icon="mdi:dots-horizontal"
-                    ></Button>
-                  </template>
-                  <template #content>
-                    <div class="flex flex-col">
-                      <button @click.prevent="openModalEditSubmenu(submenu)">
-                        <DropdownLink to="#">edit</DropdownLink>
-                      </button>
-                      <button
-                        @click.prevent="prepareDelete(submenu.id,submenu.title)"
-                        :disabled="!submenu.id"
-                      >
-                        <DropdownLink to="#">delete</DropdownLink>
-                      </button>
-                    </div>
-                  </template>
-                </Dropdown>
-              </td>
-            </tr>
-          </tbody> 
-        </TableHeaders>
-        <TablePagination
-          :pagination="paginationData"
-          @prevPage="loadSubmenus(paginationData.prevPageUrl)"
-          @nextPage="loadSubmenus(paginationData.nextPageUrl)"
-        />
-      </base-card>
-    </div>
-  </PageWrapper>
-</template>

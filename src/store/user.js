@@ -13,7 +13,7 @@ export default {
         tableHeader: {
             draw: 0,
             search: '',
-            length: 5,
+            length: 10,
         },
         paginationData: {
             lastPage: '',
@@ -150,7 +150,7 @@ export default {
                 throw error
             }
         },
-        //FUNGSI INI UNTUK MENGATUR ROLE TIAP USER
+        // FUNGSI INI UNTUK MENGATUR ROLE TIAP USER
         async setRoleUser({ dispatch }, userData) {
             try {
                 // Kirim data pengaturan peran pengguna ke backend
@@ -158,12 +158,25 @@ export default {
                     `role-permission/set-role-user`,
                     userData
                 )
-
-                // Anda juga bisa menangani respons lainnya atau memberikan notifikasi sukses
-                console.log(
-                    'Pengaturan peran pengguna berhasil:'
-                    // response.data.data
+                return response.data
+            } catch (error) {
+                console.error('Gagal mengatur peran pengguna:', error)
+                throw error // Meneruskan kesalahan ke komponen pemanggil jika perlu
+            }
+        },
+        // FUNGSI INI UNTUK MENGATUR ROLE TIAP USER
+        async updateRoleUser({ dispatch }, userData) {
+            try {
+                const { user_id, role } = userData // Ambil user_id dan role dari userData
+                const response = await axios.post(
+                    '/role-permission/set-role-user',
+                    {
+                        user_id,
+                        role, // Kirim user_id dan role ke server
+                    }
                 )
+                commit('SET_USER_ROLES', data.data)
+                return response.data
             } catch (error) {
                 console.error('Gagal mengatur peran pengguna:', error)
                 throw error // Meneruskan kesalahan ke komponen pemanggil jika perlu
@@ -196,6 +209,24 @@ export default {
         },
         //BERFUNGSI UNTUK MENGATUR PERMISSION SETIAP ROLEH YANG DIPILIH
         async setRolePermission({ commit }, payload) {
+            try {
+                const response = await axios.post(
+                    `role-permission/set-role-permission`,
+                    payload
+                )
+
+                return response.data
+            } catch (error) {
+                // Tangani kesalahan
+                console.error(
+                    'Kesalahan dalam permintaan setRolePermission:',
+                    error
+                )
+                throw error
+            }
+        },
+        //BERFUNGSI UNTUK UPDATE PERMISSION SETIAP ROLEH YANG DIPILIH
+        async updateRolePermission({ commit }, payload) {
             try {
                 const response = await axios.post(
                     `role-permission/set-role-permission`,

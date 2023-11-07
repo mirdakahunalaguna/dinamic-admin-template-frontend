@@ -42,8 +42,7 @@ defineProps({
                         variant="secondary"
                     >
                     </Button>
-                </MenuButton>
-
+                  </MenuButton>
                 <!-- Dropdwon menu -->
                 <transition
                     enter-active-class="transition duration-100 ease-out"
@@ -82,7 +81,7 @@ defineProps({
                 </transition>
             </Menu>
         </div>
-
+        
         <!-- Card body -->
         <slot />
     </div>
