@@ -86,7 +86,7 @@ export default {
             try {
                 const response = await axios.get(`/submenu`)
                 const submenus = response.data.data // Pastikan respons API sesuai dengan struktur ini
-                console.log('Data dari API:', submenus)
+                // console.log('Data dari API:', submenus)
                 commit('SET_SUBMENUS', submenus)
             } catch (error) {
                 console.error(error)
@@ -108,7 +108,7 @@ export default {
                 // Mengirim permintaan POST dengan data submenu ke API
                 const response = await axios.post('/submenu', submenuData)
                 // Anda juga bisa menangani respons lainnya atau memberikan notifikasi sukses
-                console.log('Menu berhasil dibuat:', response.data.data)
+                console.log('Submenu berhasil dibuat:', response.data.data)
             } catch (error) {
                 console.error('Terjadi kesalahan saat membuat submenu:', error)
                 throw error // Melemparkan kembali kesalahan untuk ditangani di komponen yang menggunakan fungsi ini

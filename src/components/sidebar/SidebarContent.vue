@@ -28,10 +28,12 @@ const fetchMenus = async () => {
     // Handle error di sini jika perlu
   }
 };
+
 //FUNGSI HANDLE KELUAR
 const logout = () => store.dispatch('auth/logout');
 // MENDAPATKAN DAFTAR MENU DARI TOKO (MENGGUNAKAN COMPUTED PROPERTY)
 const menus = computed(() => store.getters['sidebarMenu/menus']);
+const submenu = computed(() => store.getters['sidebarSubmenu/submenu']);
 
 // MENDAPATKAN DATA PENGGUNA YANG SAAT INI MASUK (MENGGUNAKAN COMPUTED PROPERTY)
 const user = computed(() => store.getters['auth/user']);
@@ -71,7 +73,7 @@ const menusWithoutSubmenus = computed(() => {
     <PerfrectScrollbar 
         tagname="nav"
         aria-label="main"
-        class="relative flex flex-col flex-1 max-h-full gap-4 px-3"
+        class="relative flex flex-col flex-1 max-h-full gap-4 px-3 "
     >
         <!-- Menu tanpa submenu -->
             <SidebarLink
@@ -133,11 +135,11 @@ const menusWithoutSubmenus = computed(() => {
         </SidebarCollapsible> 
         
         <!-- Menu tanpa submenu -->
-        <SidebarLink 
-            @click.prevent="logout"
-            title="keluar"
-            icon="mdi:location-exit"
-            class='bottom-2 left-2 '
+         <SidebarLink
+          @click.prevent="logout"
+          title="Keluar"
+          icon="mdi:location-exit"
+          class="mt-auto"
         />
  
     </PerfrectScrollbar>

@@ -22,7 +22,7 @@
            <div class="grid grid-cols-1 gap-4 ">
               <div>
                 <BaseCard title="asign role to user"
-                :actions="[{ title: 'detail role', to: 'detail-role' }]" >
+                :actions="[{ title: 'handling role', to: 'detail-role' }]" >
                   <div  class="w-full h-10 -mt-2 flex items-center justify-start ">
                     <InputError v-if="isErrorRole" :message="errorMessageRole" />
                     <InputSuccess v-if="isSuccessRole" :message="successMessageRole" />
@@ -157,46 +157,53 @@
               >
               <tbody >
                 <tr v-for="userRole in sortedUserRoles"  
-                @click="toggleSortOrder(column.name)" 
-                :key="userRole.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td class="pl-6 py-3 ">{{ userRole.pegawai.nama }} </td>
-                <td class="pl-6 py-3">{{ userRole.email }}</td>
-                <td class="pl-6 py-3 w-1/4">
-                  <span v-for="(role, index) in userRole.roles" :key="index" class="flex gap-1">
-                    <!-- Tambahkan tanda "-" di awal setiap elemen -->
-                    <span> - </span>
-                    <span>{{ role.name }}</span>
-                    <!-- Buat baris baru setiap element -->
-                    <br v-if="index < userRole.roles.length - 1">
-                  </span>
-                </td>
-                <td class="px-6 py-3 ">
-                  <Dropdown align="right" class="">
-                    <template #trigger>
-                      <Button
-                        iconOnly
-                        variant="secondary"
-                        icon="mdi:dots-horizontal"
-                      ></Button>
-                    </template>
-                    <template #content>
-                      <div class="flex flex-col">
-                        <button @click.prevent="openModalUserRole(userRole)">
-                          <DropdownLink to="#">change role</DropdownLink>
-                        </button>
-                        <button @click.prevent="prepareDelete(userRole.id, userRole.pegawai.nama,  )"
-                         :disabled="!userRole.id">
-                          <DropdownLink to="#">delete user role</DropdownLink>
-                        </button>
-                      </div>
-                    </template>
-                  </Dropdown>
-                </td>
-                </tr>
+                  @click="toggleSortOrder(column.name)" 
+                  :key="userRole.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                  <td class="pl-6 py-3 ">{{ userRole.pegawai.nama }} </td>
+                  <td class="pl-6 py-3">{{ userRole.email }}</td>
+                  <td class="pl-6 py-3 w-1/4">
+                    <span v-for="(role, index) in userRole.roles" :key="index" class="flex gap-1">
+                      <!-- Tambahkan tanda "-" di awal setiap elemen -->
+                      <span> - </span>
+                      <span>{{ role.name }}</span>
+                      <!-- Buat baris baru setiap element -->
+                      <br v-if="index < userRole.roles.length - 1">
+                    </span>
+                  </td>
+                  <td class="px-6 py-3 ">
+                    <Dropdown align="right" class="">
+                      <template #trigger>
+                        <Button
+                          sr-text="Actions"
+                          size="sm"
+                          icon-only
+                          icon="mdi:dots-vertical"
+                          variant="secondary"
+                        />
+                      </template>
+                      <template #content>
+                        <div class="flex flex-col">
+                          <button @click.prevent="openModalUserRole(userRole)">
+                            <DropdownLink to="#">change role</DropdownLink>
+                          </button>
+                          <button @click.prevent="prepareDelete(userRole.id, userRole.pegawai.nama,  )"
+                          :disabled="!userRole.id">
+                            <DropdownLink to="#">delete user role</DropdownLink>
+                          </button>
+                        </div>
+                      </template>
+                    </Dropdown>
+                  </td>
+                  </tr>
+                  <tr class="h-20"></tr>
               </tbody>  
             </TableHeaders>
-
-            </base-card>
+          </base-card>
+          <TablePagination
+            :pagination="paginationData"
+            @prevPage="loadUserRoles(paginationData.prevPageUrl)"
+            @nextPage="loadUserRoles(paginationData.nextPageUrl)"
+          />
           </div>
         </div>
   </page-wrapper>
@@ -208,6 +215,7 @@ import { ref, onMounted, computed, reactive } from 'vue';
 import { useStore } from 'vuex';
 
 const tableHeader = computed(() => store.getters['user/tableHeader']);
+const paginationData = computed(() => store.getters['user/paginationData']);
 const userRole = computed(() => store.getters['user/userRoles']);
 
 // State untuk loading dan error handling
@@ -383,8 +391,9 @@ const updateRolePermissions = async () => {
 const showElement = reactive({
   showSearch: true,
   showTotalDisplay: true,
-});
+}); 
 
+// Fungsi untuk memanggil loadMenus dengan paginationData yang sesuai
 const loadUserRoles = (url = '/role-permission/user-role-pegawai') => {
   try {
     isLoading.value = true;

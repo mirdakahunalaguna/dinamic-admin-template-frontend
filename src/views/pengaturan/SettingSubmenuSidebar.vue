@@ -25,8 +25,9 @@
         <BaseCard 
         title="input sub-menu" 
         :actions="[{ title: 'View', to: '#' }]">
-          <div  class="w-full -mt-2 h-8 flex items-center justify-start">
+          <div  class="w-full h-10 -mt-2 flex items-center justify-start">
             <InputError v-if="isError" :message="errorMessage" />
+            <InputSuccess v-if="isSuccess" :message="successMessage" />
           </div> 
           <form @submit.prevent="handleSubmit" class="grid grid-cols-1 gap-6 md:w-3/4">
             <input-select
@@ -39,7 +40,7 @@
             <Input
               withLabel
               type="text"
-              class="block w-full  pl-24"
+              class=" pl-24"
               v-model="form.title" 
             />
             </InputLabelWrapper>
@@ -63,65 +64,70 @@
           </form>  
         </BaseCard>
       </div>
-      <base-card title="tabel sub-menu">
-        <TableSetting
-          :element="showElement"
-          v-model:search="tableHeader.search"
-          v-model:length="tableHeader.length"
-          @searchValueEnter="loadSubmenus()"
-          @searchValueButtonClick="loadSubmenus()"
-          @showTotalDisplayChanged="loadSubmenus()"
-          />
-        <TableHeaders
-          :columns="tableColumns"
-          :sort-key="sortKey"
-          :sort-orders="sortOrders"
-          :show-icons="true"
-          :selected-key="selectedKey"
-          @sort="toggleSortOrder"
-          class="mt-6 max-h-screen"
-        >
-          <tbody >
-            <tr v-for="submenu in sortedSubmenus"  
-              @click="toggleSortOrder(column.name)" 
-              :key="submenu.id" 
-              class=" bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-              <td class="px-6 py-3">{{ submenu.menu.title  }}</td>
-              <td class="px-6 py-3">{{ submenu.title }} </td>
-              <td class="px-6 py-3">{{ submenu.to }}</td>
-              <td class="px-6 py-3">
-                <Dropdown align="right" class="">
-                  <template #trigger>
-                    <Button
-                      iconOnly
-                      variant="secondary"
-                      icon="mdi:dots-horizontal"
-                    ></Button>
-                  </template>
-                  <template #content>
-                    <div class="flex flex-col">
-                      <button @click.prevent="openModalEditSubmenu(submenu)">
-                        <DropdownLink to="#">edit</DropdownLink>
-                      </button>
-                      <button
-                        @click.prevent="prepareDelete(submenu.id,submenu.title)"
-                        :disabled="!submenu.id"
-                      >
-                        <DropdownLink to="#">delete</DropdownLink>
-                      </button>
-                    </div>
-                  </template>
-                </Dropdown>
-              </td>
-            </tr>
-          </tbody> 
-        </TableHeaders>
+      <div>
+        <base-card title="tabel sub-menu">
+          <TableSetting
+            :element="showElement"
+            v-model:search="tableHeader.search"
+            v-model:length="tableHeader.length"
+            @searchValueEnter="loadSubmenus()"
+            @searchValueButtonClick="loadSubmenus()"
+            @showTotalDisplayChanged="loadSubmenus()"
+            />
+          <TableHeaders
+            :columns="tableColumns"
+            :sort-key="sortKey"
+            :sort-orders="sortOrders"
+            :show-icons="true"
+            :selected-key="selectedKey"
+            @sort="toggleSortOrder"
+            class="mt-6 max-h-screen"
+          >
+            <tbody >
+              <tr v-for="submenu in sortedSubmenus"  
+                @click="toggleSortOrder(column.name)" 
+                :key="submenu.id" 
+                class=" bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <td class="px-6 py-3">{{ submenu.menu.title }}</td>
+                <td class="px-6 py-3">{{ submenu.title }} </td>
+                <td class="px-6 py-3">{{ submenu.to }}</td>
+                <td class="px-6 py-3">
+                  <Dropdown align="right" >
+                    <template #trigger>
+                      <Button
+                        sr-text="Actions"
+                        size="sm"
+                        icon-only
+                        icon="mdi:dots-vertical"
+                        variant="secondary"
+                      />
+                    </template>
+                    <template #content>
+                      <div class="flex flex-col">
+                        <button @click.prevent="openModalEditSubmenu(submenu)">
+                          <DropdownLink to="#">edit</DropdownLink>
+                        </button>
+                        <button
+                          @click.prevent="prepareDelete(submenu.id, submenu.title)"
+                          :disabled="!submenu.id"
+                        >
+                          <DropdownLink to="#">delete</DropdownLink>
+                        </button>
+                      </div>
+                    </template>
+                  </Dropdown>
+                </td> 
+              </tr>
+              <tr class="h-20"></tr>
+            </tbody> 
+          </TableHeaders>
+        </base-card>
         <TablePagination
           :pagination="paginationData"
           @prevPage="loadSubmenus(paginationData.prevPageUrl)"
           @nextPage="loadSubmenus(paginationData.nextPageUrl)"
         />
-      </base-card>
+      </div>
     </div>
   </PageWrapper>
 </template>
@@ -133,32 +139,24 @@ import { useStore } from 'vuex';
 // State untuk loading dan error handling
 const isLoading = ref(false);
 const isError = ref(false);
+const isSuccess = ref(false);
 const errorMessage = ref(null);
-const selectedMenuId = ref(''); // Variabel untuk menyimpan ID menu yang dipilihy
+const successMessage = ref(null);
+const selectedMenuId = ref(''); 
 const selectOptions = ref([]);
 const store = useStore();
 // Membuat sebuah pemantauan data untuk menu yang benar-benar merespons perubahan di Vuex.
 const submenu = computed(() => store.getters['sidebarSubmenu/submenu']);
+
 // Membuat sebuah pemantauan data untuk tableHeader yang merespons perubahan di Vuex.
 const tableHeader = computed(() => store.getters['sidebarMenu/tableHeader']);
 // Membuat sebuah pemantauan data untuk paginationData yang merespons perubahan di Vuex.
 const paginationData = computed(() => store.getters['sidebarSubmenu/paginationData']);
 
-// Fungsi untuk memanggil loadMenus dengan paginationData yang sesuai
-const fetchSubmenus = () => {
+//PROSES MEMBUAT INPUT SELECT DATA MENU
+const listMenu = async () => {
   try {
-    isLoading.value = true;
-    // Panggil store.dispatch dengan tableHeader yang telah diperbarui
-    store.dispatch('sidebarSubmenu/fetchSubmenus');
-    isLoading.value = false;
-  } catch (error) {
-    console.error(error);
-    isLoading.value = false;
-  }
-};
-const fetchMenus = async () => {
-  try {
-    // Panggil aksi fetchMenus dari store Anda
+    // Panggil aksi listMenu dari store Anda
     await store.dispatch('sidebarMenu/fetchMenus');
 
     // Ambil data menu dari store setelah diambil dari API
@@ -185,7 +183,15 @@ const fetchMenus = async () => {
     console.error('Terjadi kesalahan saat mengambil data menu:', error);
   }
 }
-
+//PROSES TAMPIL DATA SUBMENU   
+const listSubmenu = async () => {
+  try {
+    await store.dispatch('sidebarSubmenu/fetchSubmenus'); 
+    
+  } catch (error) {
+    console.error(error);
+  }
+};
 //PROSES INPUT DATA
 const form = reactive({
   title: '',
@@ -204,9 +210,15 @@ const handleSubmit = async () => {
     };
     // Menggunakan action createMenu dari Vuex untuk membuat menu baru
     await store.dispatch('sidebarSubmenu/createSubmenu', submenuData);
-    fetchMenus();
+    listMenu();
     loadSubmenus();
+    listSubmenu();
     // After adding the submenu successfully, reset the form
+    isSuccess.value = true;
+    successMessage.value = 'succes create new sub menu'
+    setTimeout(() => {
+      isSuccess.value = false;
+    }, 3000);
     isLoading.value = false;
     form.title = null;
     form.to = null;
@@ -308,14 +320,15 @@ const prepareDelete = (id, title) => {
 const deleteSubmenu = async () => {
   try {
     isLoading.value = true;
-    // Panggil aksi deleteMenu dari Vuex dengan ID menu yang akan dihapus
+    // Panggil aksi deleteSubmenu dari Vuex dengan ID menu yang akan dihapus
     await store.dispatch('sidebarSubmenu/deleteSubmenu', deleteId.value);
     isLoading.value = false;
     isDeleteModalOpen.value = false;
-    fetchMenus();
+    listMenu();
     loadSubmenus();
+    listSubmenu();
   } catch (error) {
-    console.error('Gagal menghapus menu:', error);
+    console.error('Gagal menghapus submenu:', error);
   }
 };
 
@@ -344,8 +357,9 @@ const updateSubmenu = async (updatedSubmenu) => {
     await store.dispatch('sidebarSubmenu/updateSubmenu', { id: editedSubmenu.value.id, submenuData: updatedSubmenu });
     isLoading.value = false;
     isEditModalOpen.value = false; // Tutup modal setelah pengeditan selesai
-    fetchMenus();
-    loadSubmenus(); // Muat ulang menu setelah mengubah
+    listMenu();
+    loadSubmenus();
+    listSubmenu();
   } catch (error) {
     console.error('Terjadi kesalahan saat mengubah submenu:', error);
     isLoading.value = false;
@@ -353,8 +367,9 @@ const updateSubmenu = async (updatedSubmenu) => {
   }
 };
 onMounted(async () => {
-  // Panggil fungsi fetchMenus setelah komponen di-mount
-  fetchMenus();
+  // Panggil fungsi listMenu setelah komponen di-mount
+  listMenu();  
+  listSubmenu();
   loadSubmenus();
 });
 </script>

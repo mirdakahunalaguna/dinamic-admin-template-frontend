@@ -18,11 +18,11 @@ const store = useStore();
 const logout = () => store.dispatch('auth/logout');
 
 // Menggunakan getter menus dari Vuex
-const user = computed(() => store.getters['auth/user']);
+const profile = computed(() => store.getters['auth/profile']);
 onMounted(async () => {
   try { 
     await store.dispatch('auth/getUser'); // Gantilah 'namaNamespaceStore' dengan namespace yang sesuai
-    const profile = store.state.auth.user; 
+    // console.log(profile.value)
   } catch (error) {
     console.error('Terjadi kesalahan saat memanggil action getUser:', error);
     // Handle kesalahan sesuai kebutuhan Anda, misalnya menampilkan pesan kesalahan kepada pengguna.
@@ -44,7 +44,7 @@ onUnmounted(() => {
     <nav
         aria-label="secondary"
         :class="[
-            'sticky top-0 z-10 px-6 py-4 bg-white flex items-center justify-between transition-transform duration-500 dark:bg-dark-eval-1',
+            'bg-gray-50 sticky top-0 z-10 px-6 py-4  flex items-center justify-between transition-transform duration-500 dark:bg-dark-eval-1',
             {
                 '-translate-y-full': scrolling.down,
                 'translate-y-0': scrolling.up,
@@ -100,7 +100,7 @@ onUnmounted(() => {
         
         <div class="flex items-center gap-2">
           
-                    <span class="font-semibold p-2">{{ user.nama }} </span>
+                    <span class="font-semibold p-2">{{profile.nama}} </span>
             <!-- Dropdwon -->
             <Dropdown align="right">
                 <template #trigger>

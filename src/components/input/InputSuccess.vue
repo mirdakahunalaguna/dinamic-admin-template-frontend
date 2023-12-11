@@ -5,7 +5,7 @@ defineProps({
 </script>
 
 <template>
-  <div v-show="message" class="z-50 py-4">
+  <div v-show="message" class="z-40 py-4">
     <p
       class="text-sm font-medium text-blue-900 
       bg-gradient-to-r from-green-300 via-green-200 to-slate-50 

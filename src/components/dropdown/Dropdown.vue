@@ -46,7 +46,7 @@ const alignmentClasses = computed(() => {
             leave-to-class="transform scale-95 opacity-0"
         >
             <MenuItems
-                class="absolute z-50 mt-2 rounded-md shadow-lg"
+                class="absolute z-40 mt-2 rounded-md shadow-lg"
                 :class="[widthClass, alignmentClasses]"
                 @click="open = false"
             >

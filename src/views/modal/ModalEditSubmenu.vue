@@ -14,25 +14,17 @@
             :options="selectOptions"
             v-model="editedSubmenu.menu_id"
           />
-          
-          <Label 
-            for="name" 
-            value="icon name" 
-            class="text-left"/>
-
-          <div class="flex gap-4 justify-between">
-            <div>
-              <Input type="text" v-model="editedSubmenu.to" />
-            </div>
-            <a class="p-2 font-semibold border-2 rounded-md " href="https://icon-sets.iconify.design/" target="_blank"
-              rel="noopener noreferrer"><span class="text-rose-600">* </span>cari
-            </a>
-          </div>
           <Label 
               for="name" 
-              value="route to" 
+              value="Sub-menu Name" 
               class="text-left" />
-            <Input type="text" v-model="editedSubmenu.title" />
+            <Input type="text" v-model="editedSubmenu.title" />          
+          <Label 
+            for="name" 
+            value="Route to" 
+            class="text-left"/>
+            <Input type="text" v-model="editedSubmenu.to" /> 
+
 
           <div class="p-4 grid grid-cols-1 gap-4">
             <p class="text-gray-700 dark:text-gray-300 text-lg">Are you sure you want to edit this item?</p>

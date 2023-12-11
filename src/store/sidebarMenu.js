@@ -7,6 +7,7 @@ export default {
         menus: [],
         menu: [],
         menu_role: [],
+        role_menu: [],
         paginationData: {
             lastPage: '',
             currentPage: '',
@@ -35,6 +36,9 @@ export default {
         menu_role(state) {
             return state.menu_role
         },
+        role_menu(state) {
+            return state.role_menu
+        },
         // Getter untuk mengakses tableHeader
         tableHeader(state) {
             return state.tableHeader
@@ -54,6 +58,9 @@ export default {
         SET_MENU_ROLE(state, menu_role) {
             state.menu_role = menu_role
         },
+        SET_ROLE_MENU(state, role_menu) {
+            state.role_menu = role_menu
+        },
         SET_TABLE_HEADER_VALUE(state, tableHeader) {
             state.tableHeader = tableHeader
         },
@@ -71,10 +78,7 @@ export default {
                 const response = await axios.get(url, { params: tableHeader })
                 const data = response.data.data
 
-                // Memanggil mutation untuk mengatur data menu
                 commit('SET_MENU', data.data)
-
-                // Memanggil mutation untuk mengatur data paginasi
                 commit('SET_PAGINATION_DATA', {
                     lastPage: data.last_page,
                     currentPage: data.current_page,
@@ -85,7 +89,6 @@ export default {
                     from: data.from,
                     to: data.to,
                 })
-                // console.log('Data yang diterima dari API:', data)
             } catch (error) {
                 console.error(error)
             }
@@ -93,31 +96,27 @@ export default {
 
         async fetchMenus({ commit }) {
             try {
-                const response = await axios.get(`/menu`)
-                const menus = response.data.data // Pastikan respons API sesuai dengan struktur ini
+                const response = await axios.get('/menus')
+                const menus = response.data.data
                 commit('SET_MENUS', menus)
             } catch (error) {
                 console.error(error)
             }
         },
+
         async createMenu({ dispatch }, menuData) {
             try {
-                // Kirim data menu baru ke backend
-                const response = await axios.post(`/menu`, menuData)
-
-                // Jika berhasil, panggil action fetchMenus untuk memperbarui daftar menu
+                const response = await axios.post('/menu', menuData)
                 dispatch('fetchMenus')
-
-                // Anda juga bisa menangani respons lainnya atau memberikan notifikasi sukses
                 console.log('Menu berhasil dibuat:', response.data.data)
             } catch (error) {
                 console.error('Gagal membuat menu:', error)
-                throw error // Meneruskan kesalahan ke komponen pemanggil jika perlu
+                throw error
             }
         },
+
         async createMenuRole({ dispatch }, menuRoleData) {
             try {
-                // Kirim data menu baru ke backend
                 const response = await axios.post(
                     '/menu/menu-role',
                     menuRoleData
@@ -132,32 +131,31 @@ export default {
                 throw error
             }
         },
+
         async deleteMenu({ commit, dispatch }, id) {
             try {
                 const response = await axios.delete(`/menu/${id}`)
-                commit('SET_MENUS', response.data.data) // Perbarui daftar menu setelah menghapus menu
+                commit('SET_MENUS', response.data.data)
                 console.log('Menu berhasil dihapus:', response.data.data)
-                dispatch('fetchMenus') // Perbarui daftar menu setelah menghapus menu
+                dispatch('fetchMenus')
             } catch (error) {
                 console.error('Gagal menghapus menu:', error)
                 throw error
             }
         },
+
         async updateMenu({ commit, dispatch }, { id, menuData }) {
             try {
-                const response = await axios.put(`/menu/${id}`, menuData) // Mengirim permintaan PUT
-                // Perbarui daftar menu setelah berhasil mengubah menu
+                const response = await axios.put(`/menu/${id}`, menuData)
                 commit('SET_MENUS', response.data.data)
-                // Tampilkan notifikasi sukses atau lakukan tindakan lain yang sesuai
                 console.log('Menu berhasil diubah:', response.data.data)
-
-                // Perbarui daftar menu setelah berhasil mengubah menu
                 dispatch('fetchMenus')
             } catch (error) {
                 console.error('Gagal mengubah menu:', error)
-                throw error // Meneruskan kesalahan ke komponen pemanggil jika perlu
+                throw error
             }
         },
+
         async getMenuRoles({ commit }, payload) {
             try {
                 const response = await axios.post(`menu/get-menu-role`, {
@@ -171,23 +169,43 @@ export default {
                     throw error
                 }
             } catch (error) {
-                // Tangani kesalahan
                 console.error('Kesalahan dalam permintaan getMenuRoles:', error)
                 throw error
             }
         },
-        //BERFUNGSI UNTUK MENGATUR PERMISSION SETIAP ROLEH YANG DIPILIH
+        async getRoleMenus({ commit }, payload) {
+            try {
+                const response = await axios.post(`menu/get-role-menu`, {
+                    role_id: payload,
+                })
+
+                if (response.status === 200 && response.data) {
+                    commit('SET_ROLE_MENU', response.data.data)
+                    return response.data
+                } else {
+                    throw error
+                }
+            } catch (error) {
+                console.error('Kesalahan dalam permintaan getMenuRoles:', error)
+                throw error
+            }
+        },
+
         async setMenuRoles({ commit }, payload) {
             try {
                 const response = await axios.post(`menu/set-menu-role`, payload)
-
                 return response.data
             } catch (error) {
-                // Tangani kesalahan
-                console.error(
-                    'Kesalahan dalam permintaan setRolePermission:',
-                    error
-                )
+                console.error('Kesalahan dalam permintaan setMwnuRole:', error)
+                throw error
+            }
+        },
+        async setRoleMenus({ commit }, payload) {
+            try {
+                const response = await axios.post(`menu/set-role-menu`, payload)
+                return response.data
+            } catch (error) {
+                console.error('Kesalahan dalam permintaan setRoleMenu:', error)
                 throw error
             }
         },

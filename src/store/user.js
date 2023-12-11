@@ -13,7 +13,7 @@ export default {
         tableHeader: {
             draw: 0,
             search: '',
-            length: 10,
+            length: 5,
         },
         paginationData: {
             lastPage: '',
@@ -93,7 +93,7 @@ export default {
                 const response = await axios.get(url, { params: tableHeader })
                 const data = response.data.data
 
-                // Memanggil mutation untuk mengatur data menu
+                // Memanggil mutation untuk mengatur data role
                 commit('SET_USER_ROLES', data.data)
 
                 // Memanggil mutation untuk mengatur data paginasi
@@ -135,6 +135,139 @@ export default {
                 return response.data
             } catch (error) {
                 console.error(error)
+                throw error
+            }
+        },
+        //FUNGSI UNTUK MENAMPILKAN DATA PAGING USER ROLE
+        async loadRoles({ commit }, { url, tableHeader }) {
+            try {
+                const response = await axios.get(url, { params: tableHeader })
+                const data = response.data.data
+
+                // Memanggil mutation untuk mengatur data role
+                commit('SET_ROLES', data.data)
+
+                // Memanggil mutation untuk mengatur data paginasi
+                commit('SET_PAGINATION_DATA', {
+                    lastPage: data.last_page,
+                    currentPage: data.current_page,
+                    total: data.total,
+                    lastPageUrl: data.last_page_url,
+                    nextPageUrl: data.next_page_url,
+                    prevPageUrl: data.prev_page_url,
+                    from: data.from,
+                    to: data.to,
+                })
+                // console.log('Data yang diterima dari API:', data)
+            } catch (error) {
+                console.error(error)
+            }
+        },
+        //CREATE ROLE
+        async createRole({ dispatch }, roleData) {
+            try {
+                // Kirim data role baru ke backend
+                const response = await axios.post(`/roles`, roleData)
+
+                // Jika berhasil, panggil action fetchPermissions untuk memperbarui daftar role
+                dispatch('fetchPermissions')
+
+                // Anda juga bisa menangani respons lainnya atau memberikan notifikasi sukses
+                console.log('Role berhasil dibuat:', response.data)
+            } catch (error) {
+                console.error('Gagal membuat role:', error)
+                throw error // Meneruskan kesalahan ke komponen pemanggil jika perlu
+            }
+        },
+        //UPDATE ROLES
+        async updateRole({ commit, dispatch }, { id, roleData }) {
+            try {
+                const response = await axios.put(`/roles/${id}`, roleData) // Mengirim permintaan PUT
+                // Perbarui daftar role setelah berhasil mengubah role
+                commit('SET_ROLES', response.data.data)
+                // Tampilkan notifikasi sukses atau lakukan tindakan lain yang sesuai
+                console.log('Role berhasil diubah:', response.data)
+            } catch (error) {
+                console.error('Gagal mengubah role:', error)
+                throw error // Meneruskan kesalahan ke komponen pemanggil jika perlu
+            }
+        },
+        //HAPUS DATA ROLE
+        async deleteRole({ commit, dispatch }, id) {
+            try {
+                const response = await axios.delete(`/roles/${id}`)
+                commit('SET_ROLES', response.data.data) // Perbarui daftar roles setelah menghapus roles
+                console.log('Role berhasil dihapus:', response.data)
+                dispatch('fetchRoles') // Perbarui daftar roles setelah menghapus roles
+            } catch (error) {
+                console.error('Gagal menghapus role:', error)
+                throw error
+            }
+        },
+        //FUNGSI UNTUK MENAMPILKAN DATA PAGING PERMISSION
+        async loadPermissions({ commit }, { url, tableHeader }) {
+            try {
+                const response = await axios.get(url, { params: tableHeader })
+                const data = response.data.data
+
+                // Memanggil mutation untuk mengatur data role
+                commit('SET_PERMISSIONS', data.data)
+
+                // Memanggil mutation untuk mengatur data paginasi
+                commit('SET_PAGINATION_DATA', {
+                    lastPage: data.last_page,
+                    currentPage: data.current_page,
+                    total: data.total,
+                    lastPageUrl: data.last_page_url,
+                    nextPageUrl: data.next_page_url,
+                    prevPageUrl: data.prev_page_url,
+                    from: data.from,
+                    to: data.to,
+                })
+                // console.log('Data yang diterima dari API:', data)
+            } catch (error) {
+                console.error(error)
+            }
+        },
+        //CREATE PERMISSION
+        async createPermission({ dispatch }, permissionData) {
+            try {
+                // Kirim data permission baru ke backend
+                const response = await axios.post(
+                    `/permissions`,
+                    permissionData
+                )
+                // Anda juga bisa menangani respons lainnya atau memberikan notifikasi sukses
+                console.log('Permission berhasil dibuat:', response.data)
+            } catch (error) {
+                console.error('Gagal membuat permission:', error)
+                throw error // Meneruskan kesalahan ke komponen pemanggil jika perlu
+            }
+        },
+        //UPDATE PERMISSION
+        async updatePermission({ commit, dispatch }, { id, permissionData }) {
+            try {
+                const response = await axios.put(
+                    `/permissions/${id}`,
+                    permissionData
+                ) // Mengirim permintaan PUT
+                // Perbarui daftar permission setelah berhasil mengubah permission
+                commit('SET_PERMISSIONS', response.data.data)
+                // Tampilkan notifikasi sukses atau lakukan tindakan lain yang sesuai
+                console.log('Permission berhasil diubah:', response.data)
+            } catch (error) {
+                console.error('Gagal mengubah permission:', error)
+                throw error // Meneruskan kesalahan ke komponen pemanggil jika perlu
+            }
+        },
+        //HAPUS DATA PERMISSION
+        async deletePermission({ commit, dispatch }, id) {
+            try {
+                const response = await axios.delete(`/permissions/${id}`)
+                commit('SET_PERMISSIONS', response.data.data) // Perbarui daftar roles setelah menghapus roles
+                console.log('Pemission berhasil dihapus:', response.data)
+            } catch (error) {
+                console.error('Gagal menghapus permission:', error)
                 throw error
             }
         },

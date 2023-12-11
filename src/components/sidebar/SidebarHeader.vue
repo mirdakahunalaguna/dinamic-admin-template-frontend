@@ -6,16 +6,16 @@ import { sidebarState } from '@/composables'
 </script>
 
 <template>
-    <div class="flex items-center justify-between flex-shrink-0 px-3">
+    <div class="flex items-center justify-between flex-shrink-0 px-3 ">
         <router-link
             :to="{ name: 'Dashboard' }"
             class="inline-flex items-center gap-2"
         >
             <span class="sr-only">mird</span>
-            <Logo aria-hidden="true" class="w-10 h-10" />
+            <Logo aria-hidden="true"/>
         </router-link>
 
-        <Button
+        <Button 
             icon-only
             variant="info"
             v-slot="{ iconSizeClasses }"
