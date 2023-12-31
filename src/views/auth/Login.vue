@@ -25,12 +25,12 @@ const store = useStore()
 
 const login = async () => {
   try {
-    isLoading.value=true;
+    isLoading.value = true;
     clearLoginError();
-    
+
     const response = await store.dispatch('auth/masuk', loginForm);
     loginForm.processing = true;
-    
+
     if (response && response.status === 200) {
       console.log('Login successful:', response.data);
       isLoading.value = false;
@@ -38,6 +38,14 @@ const login = async () => {
     } else if (response && response.status === 203) {
       // Handle error for status 203
       loginErrorMessage.value = response.data.error;
+      isLoading.value = false;
+      isError.value = true;
+      setTimeout(() => {
+        isError.value = false;
+      }, 3000);
+    } else if (response && response.status === 500) {
+      // Handle error for status 500
+      loginErrorMessage.value = 'Server error. Please try again later.';
       isLoading.value = false;
       isError.value = true;
       setTimeout(() => {

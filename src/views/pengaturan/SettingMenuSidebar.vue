@@ -144,7 +144,7 @@
     <div>
       <div class="grid grid-cols-1 gap-4 ">      
         <div>
-          <BaseCard  title="assign menu to role" >
+          <BaseCard  title="Give menu access to roles" >
             <div  class="w-full h-10 -mt-2 flex items-center justify-start ">
               <InputError v-if="isErrorMenuRole" :message="errorMessageMenuRole" />
               <InputSuccess v-if="isSuccessMenuRole" :message="successMessageMenuRole" />
@@ -202,7 +202,7 @@
           </BaseCard> 
         </div>
         <div>
-          <BaseCard  title="assign role to menu" >
+          <BaseCard  title="Assign Role Access to Menu" >
             <div  class="w-full h-10 -mt-2 flex items-center justify-start ">
               <InputError v-if="isErrorMenus" :message="errorMessageMenus" />
               <InputSuccess v-if="isSuccessRoleMenu" :message="successMessageRoleMenu" />
