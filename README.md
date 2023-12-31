@@ -28,3 +28,4 @@ npm run dev # Using npm
 # or
 yarn dev # Using Yarn
 ```
+# dinamic-admin-template-frontend
